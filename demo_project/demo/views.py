@@ -392,16 +392,50 @@ class GhcartRendererAsJson(RendererAsJson):
 custom_gchart_renderer = GhcartRendererAsJson.as_view()
 
 
-def matplotlib_demo(request):
+class MatplotlibDemo(Demo):
 
-    data = [['Year', 'Sales', 'Expenses', 'Items Sold', 'Net Profit'],
-            [2004, 1000, 400, 100, 600],
-            [2005, 1170, 460, 120, 310],
-            [2006, 660, 1120, 50, -460],
-            [2007, 1030, 540, 100, 200]]
+    template_name = 'demo/matplotlib.html'
 
-    line_chart = matplotlib_renderer.LineChart(SimpleDataSource(data=data))
-    bar_chart = matplotlib_renderer.BarChart(SimpleDataSource(data=data))
-    context = {"line_chart": line_chart,
-               "bar_chart": bar_chart}
-    return render(request, 'demo/matplotlib.html', context)
+    def get_context_data(self, **kwargs):
+        super_context = super(Demo, self).get_context_data(**kwargs)
+
+        data = [['Year', 'Sales', 'Expenses', 'Items Sold', 'Net Profit'],
+                [2004, 1000, 400, 100, 600],
+                [2005, 1170, 460, 120, 310],
+                [2006, 660, 1120, 50, -460],
+                [2007, 1030, 540, 100, 200]]
+
+        simple_data_source = SimpleDataSource(data=data)
+        line_chart = self.renderer.LineChart(simple_data_source,
+                                             options={'title': "Sales Growth"})
+        bar_chart = self.renderer.BarChart(simple_data_source,
+                                           options={'title': "Expense Growth"})
+        pie_chart = self.renderer.PieChart(simple_data_source)
+
+        context = {"simple_data_source": simple_data_source,
+                   "line_chart": line_chart,
+                   "bar_chart": bar_chart,
+                   "pie_chart": pie_chart}
+        context.update(super_context)
+        return context
+
+    # data = [['Year', 'Sales', 'Expenses', 'Items Sold', 'Net Profit'],
+    #         [2004, 1000, 400, 100, 600],
+    #         [2005, 1170, 460, 120, 310],
+    #         [2006, 660, 1120, 50, -460],
+    #         [2007, 1030, 540, 100, 200]]
+
+    # line_chart = matplotlib_renderer.LineChart(SimpleDataSource(data=data))
+    # bar_chart = matplotlib_renderer.BarChart(SimpleDataSource(data=data))
+    # pie_chart = matplotlib_renderer.PieChart(SimpleDataSource(data=data,
+    #                                                           fields=['Year',
+    #                                                                   'Sales'])
+    #                                          )
+
+    # context = {"line_chart": line_chart,
+    #            "bar_chart": bar_chart,
+    #            "pie_chart": pie_chart}
+    # return render(request, 'demo/matplotlib.html', context)
+
+
+matplotlib_demo = MatplotlibDemo.as_view(renderer=matplotlib_renderer)
