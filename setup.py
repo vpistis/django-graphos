@@ -1,32 +1,34 @@
-VERSION = (0, 0, 2, "a", 0)  # following PEP 386
+VERSION = ( 0, 0, 3, "a", 0 )  # following PEP 386
 DEV_N = None
 
+from distutils.util import convert_path
+from fnmatch import fnmatchcase
 import os
 import sys
-from fnmatch import fnmatchcase
-from distutils.util import convert_path
+
 from setuptools import setup, find_packages
 
-def read(fname):
+
+def read( fname ):
     try:
-        return open(os.path.join(os.path.dirname(__file__), fname)).read()
+        return open( os.path.join( os.path.dirname( __file__ ), fname ) ).read()
     except IOError:
         return ""
 
 # Provided as an attribute, so you can append to these instead
 # of replicating them:
-standard_exclude = ('*.py', '*.pyc', '*$py.class', '*~', '.*', '*.bak')
-standard_exclude_directories = ('.*', 'CVS', '_darcs', './build',
-                                './dist', 'EGG-INFO', '*.egg-info')
+standard_exclude = ( '*.py', '*.pyc', '*$py.class', '*~', '.*', '*.bak' )
+standard_exclude_directories = ( '.*', 'CVS', '_darcs', './build',
+                                './dist', 'EGG-INFO', '*.egg-info' )
 
 def get_version():
-    version = "%s.%s" % (VERSION[0], VERSION[1])
+    version = "%s.%s" % ( VERSION[0], VERSION[1] )
     if VERSION[2]:
-        version = "%s.%s" % (version, VERSION[2])
+        version = "%s.%s" % ( version, VERSION[2] )
     if VERSION[3] != "f":
-        version = "%s%s%s" % (version, VERSION[3], VERSION[4])
+        version = "%s%s%s" % ( version, VERSION[3], VERSION[4] )
         if DEV_N:
-            version = "%s.dev%s" % (version, DEV_N)
+            version = "%s.dev%s" % ( version, DEV_N )
     return version
 
 # (c) 2005 Ian Bicking and contributors; written for Paste (http://pythonpaste.org)
@@ -34,12 +36,12 @@ def get_version():
 # Note: you may want to copy this into your setup.py file verbatim, as
 # you can't import this from another package, when you don't know if
 # that package is installed yet.
-def find_package_data(
-    where='.', package='',
-    exclude=standard_exclude,
-    exclude_directories=standard_exclude_directories,
-    only_in_packages=True,
-    show_ignored=True):
+def find_package_data( 
+    where = '.', package = '',
+    exclude = standard_exclude,
+    exclude_directories = standard_exclude_directories,
+    only_in_packages = True,
+    show_ignored = True ):
     """
     Return a dictionary suitable for use in ``package_data``
     in a distutils ``setup.py`` file.
@@ -68,62 +70,62 @@ def find_package_data(
     """
 
     out = {}
-    stack = [(convert_path(where), '', package, only_in_packages)]
+    stack = [( convert_path( where ), '', package, only_in_packages )]
     while stack:
-        where, prefix, package, only_in_packages = stack.pop(0)
-        for name in os.listdir(where):
-            fn = os.path.join(where, name)
-            if os.path.isdir(fn):
+        where, prefix, package, only_in_packages = stack.pop( 0 )
+        for name in os.listdir( where ):
+            fn = os.path.join( where, name )
+            if os.path.isdir( fn ):
                 bad_name = False
                 for pattern in exclude_directories:
-                    if (fnmatchcase(name, pattern)
-                        or fn.lower() == pattern.lower()):
+                    if ( fnmatchcase( name, pattern )
+                        or fn.lower() == pattern.lower() ):
                         bad_name = True
                         if show_ignored:
-                            print >> sys.stderr, (
+                            print >> sys.stderr, ( 
                                 "Directory %s ignored by pattern %s"
-                                % (fn, pattern))
+                                % ( fn, pattern ) )
                         break
                 if bad_name:
                     continue
-                if (os.path.isfile(os.path.join(fn, '__init__.py'))
-                    and not prefix):
+                if ( os.path.isfile( os.path.join( fn, '__init__.py' ) )
+                    and not prefix ):
                     if not package:
                         new_package = name
                     else:
                         new_package = package + '.' + name
-                    stack.append((fn, '', new_package, False))
+                    stack.append( ( fn, '', new_package, False ) )
                 else:
-                    stack.append((fn, prefix + name + '/', package, only_in_packages))
+                    stack.append( ( fn, prefix + name + '/', package, only_in_packages ) )
             elif package or not only_in_packages:
                 # is a file
                 bad_name = False
                 for pattern in exclude:
-                    if (fnmatchcase(name, pattern)
-                        or fn.lower() == pattern.lower()):
+                    if ( fnmatchcase( name, pattern )
+                        or fn.lower() == pattern.lower() ):
                         bad_name = True
                         if show_ignored:
-                            print >> sys.stderr, (
+                            print >> sys.stderr, ( 
                                 "File %s ignored by pattern %s"
-                                % (fn, pattern))
+                                % ( fn, pattern ) )
                         break
                 if bad_name:
                     continue
-                out.setdefault(package, []).append(prefix+name)
+                out.setdefault( package, [] ).append( prefix + name )
     return out
 
-setup(
-    name="django-graphos",
-    version=get_version(),
-    description="Django app to provide a JS agnostic way to work with charts.",
-    long_description=read("README.md"),
-    author="Agiliq",
-    author_email="hello@agiliq.com",
-    license="BSD",
-    url="http://github.com/agiliq/django-graphos",
-    packages=find_packages(),
-    package_data=find_package_data("graphos", only_in_packages=False),
-    classifiers=[
+setup( 
+    name = "django-graphos",
+    version = get_version(),
+    description = "Django app to provide a JS agnostic way to work with charts.",
+    long_description = read( "README.md" ),
+    author = "Agiliq",
+    author_email = "hello@agiliq.com",
+    license = "BSD",
+    url = "http://github.com/agiliq/django-graphos",
+    packages = find_packages(),
+    package_data = find_package_data( "graphos", only_in_packages = False ),
+    classifiers = [
         "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
@@ -132,6 +134,6 @@ setup(
         "Programming Language :: Python",
         "Framework :: Django",
     ],
-    zip_safe=False,
-    tests_require=["Django"],
-)
+    zip_safe = False,
+    tests_require = ["Django"],
+ )
