@@ -1,4 +1,4 @@
-VERSION = (0, 1, 1, "f", 0)  # following PEP 386
+VERSION = (0, 1, 2, "f", 0)  # following PEP 386
 DEV_N = None
 
 import os
@@ -103,7 +103,9 @@ def find_package_data(
                         or fn.lower() == pattern.lower()):
                         bad_name = True
                         if show_ignored:
-                            print("File %s ignored by pattern %s" % (fn, pattern), file=sys.stderr)
+                            print >> sys.stderr, (
+                                "File %s ignored by pattern %s"
+                                % (fn, pattern))
                         break
                 if bad_name:
                     continue
